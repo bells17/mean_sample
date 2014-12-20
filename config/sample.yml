@@ -1,0 +1,15 @@
+default:
+  test:
+    - "aaa"
+    - "bbb"
+    - "ccc"
+
+local:
+
+testing:
+
+development:
+
+staging:
+
+production:

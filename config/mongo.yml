@@ -1,0 +1,22 @@
+default:
+  default: &default_setting
+    host: "localhost"
+    name: "mean_sample"
+    username: null
+    password: null
+
+  master:
+    <<: *default_setting
+
+  slave:
+    <<: *default_setting
+
+local:
+
+testing:
+
+development:
+
+staging:
+
+production:
