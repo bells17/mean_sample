@@ -11,8 +11,29 @@ var util = require('util');
 var vsprintf = require('sprintf').vsprintf;
 var log4js = require('log4js');
 var mongoose = require('mongoose');
+var session = require('express-session')
+var flash = require('connect-flash');
+
+// config
+var shared = require('./core/shared');
+var config = require('./core/config');
+
+// logger
+shared.set('logger', log4js.getLogger());
+var logger = shared.get('logger');
+logger.info('config: '+util.inspect(config));
 
 
+// mongo
+var db = config.mongo.master;
+// mongoose.connect(vsprintf('mongodb://%s/%s', [db.host, db.dbname]));
+mongoose.connect('localhost/mean_sample');
+logger.info('mongo: '+util.inspect(mongoose));
+
+// load models
+require('./models/post');
+
+// routes
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -32,23 +53,18 @@ app.use(morgan({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+
+app.use(session({
+  secret: 'keyboard cat sample',
+  // resave: false,
+  // saveUninitialized: true,
+  cookie: {
+    maxAge: 6000000,
+  }
+}));
+app.use(flash());
+
 app.use(express.static(path.join(__dirname, 'public')));
-
-
-// config
-var shared = require('./core/shared');
-var config = require('./core/config');
-
-// logger
-shared.set('logger', log4js.getLogger());
-var logger = shared.get('logger');
-logger.info('config: '+util.inspect(config));
-
-
-// mongo
-var db = config.mongo.master;
-mongoose.connect(vsprintf('mongodb://%s/%s', [db.host, db.dbname]));
-logger.info('mongo: '+util.inspect(mongoose));
 
 
 // routes
@@ -69,7 +85,11 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    logger.warn(util.inspect(err));
+    var msg = util.inspect(err);
+    if (err.status != 404) {
+      msg = util.inspect(err, req, res, next);
+    }
+    logger.warn(util.inspect(msg));
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,

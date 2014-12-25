@@ -1,7 +1,6 @@
 "use strict";
 
 var fs = require('fs');
-
 var yaml_config = require('node-yaml-config');
 var config_dir = './config/';
 var files = fs.readdirSync(config_dir);

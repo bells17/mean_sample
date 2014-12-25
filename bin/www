@@ -10,7 +10,6 @@ var logger = shared.get('logger');
 logger.info('app: '+util.inspect(app));
 logger.info('initialize complete');
 
-
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
 });
